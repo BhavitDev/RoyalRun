@@ -6,7 +6,7 @@ public class gameManagerScript : MonoBehaviour
     
     [SerializeField] GameObject gameOverText;
     [SerializeField] TMP_Text timeText;
-    [SerializeField] float initialTime = 5f;
+    [SerializeField] float initialTime = 10f;
 
     PlayerMovement playerMovement;
     float timeLeft;
@@ -24,6 +24,10 @@ public class gameManagerScript : MonoBehaviour
     {
         TimeManager();
     }
+    public void IncreaseTimer(float timer)
+    {
+        timeLeft += timer;
+    }
 
     private void TimeManager()
     {
@@ -38,6 +42,7 @@ public class gameManagerScript : MonoBehaviour
             }
         }
     }
+
 
     void GameOver()
     {

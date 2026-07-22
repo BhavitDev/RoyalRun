@@ -6523,7 +6523,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   gameOverText: {fileID: 602503425}
   timeText: {fileID: 628247646}
-  initialTime: 5
+  initialTime: 20
 --- !u!1 &1363803521
 GameObject:
   m_ObjectHideFlags: 0
@@ -6691,16 +6691,24 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ace1259e590d537498954f16d41e2ff3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  PlatformChunk: {fileID: 7578494518075481890, guid: 72f7fa0e4cafa29499c05b57f0525c38, type: 3}
-  ChunkCount: 12
+  PlatformChunks:
+  - {fileID: 7578494518075481890, guid: 72f7fa0e4cafa29499c05b57f0525c38, type: 3}
+  - {fileID: 5614509789659561047, guid: 9f3f936f0e88cad4292ed8e45e1b98ee, type: 3}
+  - {fileID: 5614509789659561047, guid: 6576c7339e2af7c4a83591d3a0c0d577, type: 3}
+  - {fileID: 5614509789659561047, guid: 2a17fd83a4f596a4fb33b8b3e422a1a7, type: 3}
+  - {fileID: 7578494518075481890, guid: 72f7fa0e4cafa29499c05b57f0525c38, type: 3}
+  - {fileID: 7578494518075481890, guid: 72f7fa0e4cafa29499c05b57f0525c38, type: 3}
   ChunkParent: {fileID: 526365629}
+  cameraController: {fileID: 776958245}
+  CheckPointChunk: {fileID: 5614509789659561047, guid: c53237da302b0794a946f43d136841c3, type: 3}
+  ChunkCount: 12
   ChunkLength: 10
   chunkMoveSpeed: 8
   minChunkMoveSpeed: 4
   maxChunkMoveSpeed: 16
   minGravityZ: -22
   maxGravityZ: 2
-  cameraController: {fileID: 776958245}
+  checkPointInterval: 8
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

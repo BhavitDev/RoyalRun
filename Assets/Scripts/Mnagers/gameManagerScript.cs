@@ -1,5 +1,6 @@
 using TMPro;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class gameManagerScript : MonoBehaviour
 {
@@ -10,10 +11,20 @@ public class gameManagerScript : MonoBehaviour
 
     PlayerMovement playerMovement;
     float timeLeft;
-    bool isGameOver = false;
+    public bool isGameOver = false;
 
     public bool IsGameOver { get { return isGameOver; } }
 
+    private void Awake()
+    {
+
+        
+        QualitySettings.vSyncCount = 0;
+        Application.targetFrameRate = 120;
+
+        //Debug.Log(Application.targetFrameRate);
+        
+    }
     private void Start()
     {
         playerMovement = FindFirstObjectByType<PlayerMovement>();
@@ -23,6 +34,7 @@ public class gameManagerScript : MonoBehaviour
     private void Update()
     {
         TimeManager();
+        //QuitGame();
     }
     public void IncreaseTimer(float timer)
     {
@@ -43,12 +55,18 @@ public class gameManagerScript : MonoBehaviour
         }
     }
 
-
     void GameOver()
     {
         isGameOver = true;
         playerMovement.enabled = false;
         gameOverText.SetActive(true);
         Time.timeScale = 0.1f;
+    }
+
+
+    public void RestartGame()
+    {
+        SceneManager.LoadScene(0);
+        Time.timeScale = 1; 
     }
 }

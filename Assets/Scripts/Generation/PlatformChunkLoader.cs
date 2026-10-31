@@ -8,11 +8,12 @@ public class PlatformChunkLoader : MonoBehaviour
     [SerializeField] GameObject ChunkParent;
     [SerializeField] CameraController cameraController;
     [SerializeField] GameObject CheckPointChunk;
+    [SerializeField] GameObject[] environmentSegmentPrefabs;
 
     [SerializeField] int ChunkCount = 12;
     [SerializeField] float ChunkLength = 10f;
     [SerializeField] float chunkMoveSpeed = 8f;
-    [SerializeField] float minChunkMoveSpeed = 4f;
+    [SerializeField] float minChunkMoveSpeed = 8f;
     [SerializeField] float maxChunkMoveSpeed = 20f;
     [SerializeField] float minGravityZ = -22f;
     [SerializeField] float maxGravityZ = 2f;
@@ -22,6 +23,15 @@ public class PlatformChunkLoader : MonoBehaviour
     List<GameObject> chunks = new List<GameObject>();
     
     int chunkIndex = 0;
+
+    public float CurrentChunkMoveSpeed => chunkMoveSpeed;
+
+    Transform camTransform;
+
+    void Awake()
+    {
+        camTransform = Camera.main.transform;
+    }
     void Start()
     {
         SpawnStartingChunk();
@@ -44,6 +54,8 @@ public class PlatformChunkLoader : MonoBehaviour
             }
             Vector3 ChunkPos = transform.position + Vector3.forward * (ChunkLength * i);
             GameObject newChunk = Instantiate(PlatformChunk, ChunkPos, Quaternion.identity, ChunkParent.transform);
+
+            AttachEnvironmentSegment(newChunk);
 
             chunks.Add(newChunk);
             
@@ -69,7 +81,7 @@ public class PlatformChunkLoader : MonoBehaviour
             GameObject chunk = chunks[i];
             chunk.transform.Translate(-transform.forward * (chunkMoveSpeed * Time.deltaTime));
 
-            if(chunk.transform.position.z < Camera.main.transform.position.z - ChunkLength)
+            if (chunk.transform.position.z < camTransform.position.z - ChunkLength) 
             {
                 ManageNewChunkCreation();
                 ManageOldChunkRemoval(chunk);
@@ -93,8 +105,23 @@ public class PlatformChunkLoader : MonoBehaviour
         }
         Vector3 newChunkPos = chunks[chunks.Count - 1].transform.position + ChunkLength * transform.forward;
         GameObject newChunk = Instantiate(PlatformChunk, newChunkPos, Quaternion.identity, ChunkParent.transform);
+        AttachEnvironmentSegment(newChunk);
         chunks.Add(newChunk);
         
 
+    }
+
+    private void AttachEnvironmentSegment(GameObject chunk)
+    {
+        if (environmentSegmentPrefabs == null || environmentSegmentPrefabs.Length == 0)
+            return;
+
+        GameObject prefab = environmentSegmentPrefabs[Random.Range(0, environmentSegmentPrefabs.Length)];
+        if (prefab == null)
+            return;
+
+        GameObject environmentSegment = Instantiate(prefab, chunk.transform);
+        environmentSegment.transform.localPosition = Vector3.zero;
+        environmentSegment.transform.localRotation = Quaternion.identity;
     }
 }

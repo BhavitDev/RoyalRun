@@ -7,7 +7,7 @@ public class CameraController : MonoBehaviour
     [SerializeField] ParticleSystem speedUpParticle;
     [SerializeField] float zoomDuration = 1.0f;
     [SerializeField] float zoomMultipliyer = 3f;
-    [SerializeField] float minZoom = 20f;
+    [SerializeField] float minZoom = 60f;
     [SerializeField] float maxZoom = 120f;
     CinemachineCamera cam;
 

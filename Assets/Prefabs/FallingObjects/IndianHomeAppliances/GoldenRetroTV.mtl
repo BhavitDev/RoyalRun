@@ -1,0 +1,46 @@
+# Golden Retro TV materials
+
+newmtl Gold
+Ka 0.05 0.05 0.05
+Kd 0.83000 0.62000 0.16000
+Ks 0.85 0.75 0.45
+Ns 780
+illum 2
+Pm 0.860
+Pr 0.220
+
+newmtl Champagne
+Ka 0.05 0.05 0.05
+Kd 1.00000 0.82000 0.34000
+Ks 0.85 0.75 0.45
+Ns 720
+illum 2
+Pm 0.780
+Pr 0.280
+
+newmtl AntiqueGold
+Ka 0.05 0.05 0.05
+Kd 0.32000 0.20000 0.05500
+Ks 0.85 0.75 0.45
+Ns 600
+illum 2
+Pm 0.750
+Pr 0.400
+
+newmtl CRTGlass
+Ka 0.05 0.05 0.05
+Kd 0.01200 0.02500 0.03200
+Ks 0.85 0.75 0.45
+Ns 880
+illum 2
+Pm 0.350
+Pr 0.120
+
+newmtl GrilleDark
+Ka 0.05 0.05 0.05
+Kd 0.05500 0.03500 0.01200
+Ks 0.85 0.75 0.45
+Ns 480
+illum 2
+Pm 0.350
+Pr 0.520

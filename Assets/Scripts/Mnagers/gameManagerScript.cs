@@ -66,7 +66,7 @@ public class gameManagerScript : MonoBehaviour
 
     public void RestartGame()
     {
-        SceneManager.LoadScene(0);
-        Time.timeScale = 1; 
+        Time.timeScale = 1f;
+        SceneManager.LoadScene("IndianMarketPreview");
     }
 }

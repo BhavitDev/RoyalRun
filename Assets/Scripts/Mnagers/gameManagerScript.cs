@@ -11,9 +11,13 @@ public class gameManagerScript : MonoBehaviour
 
     PlayerMovement playerMovement;
     float timeLeft;
+    private Color timeTextDefaultColor;
     public bool isGameOver = false;
 
+    private static readonly Color TimerWarningColor = new Color32(255, 70, 55, 255);
+
     public bool IsGameOver { get { return isGameOver; } }
+    public int FinalScore { get; private set; }
 
     private void Awake()
     {
@@ -29,6 +33,8 @@ public class gameManagerScript : MonoBehaviour
     {
         playerMovement = FindFirstObjectByType<PlayerMovement>();
         timeLeft = initialTime;
+        if (timeText != null)
+            timeTextDefaultColor = timeText.color;
     }
 
     private void Update()
@@ -47,6 +53,7 @@ public class gameManagerScript : MonoBehaviour
         {
             timeLeft -= Time.deltaTime;
             timeText.text = timeLeft.ToString("F1");
+            UpdateTimerWarning();
 
             if (timeLeft <= 0)
             {
@@ -55,12 +62,31 @@ public class gameManagerScript : MonoBehaviour
         }
     }
 
+    private void UpdateTimerWarning()
+    {
+        if (timeText == null)
+            return;
+
+        if (timeLeft <= 3f && timeLeft > 0f)
+        {
+            float pulse = (Mathf.Sin(Time.unscaledTime * Mathf.PI * 6f) + 1f) * 0.5f;
+            timeText.color = Color.Lerp(timeTextDefaultColor, TimerWarningColor, pulse);
+        }
+        else
+        {
+            timeText.color = timeTextDefaultColor;
+        }
+    }
+
     void GameOver()
     {
+        if (isGameOver) return;
         isGameOver = true;
-        playerMovement.enabled = false;
-        gameOverText.SetActive(true);
-        Time.timeScale = 0.1f;
+        FinalScore = FindFirstObjectByType<ScoreManagerScript>()?.FinalScore ?? 0;
+        if (playerMovement != null) playerMovement.enabled = false;
+        if (gameOverText != null) gameOverText.SetActive(false);
+        Time.timeScale = 0f;
+        EndGameLeaderboardUI.Show(FinalScore);
     }
 
 

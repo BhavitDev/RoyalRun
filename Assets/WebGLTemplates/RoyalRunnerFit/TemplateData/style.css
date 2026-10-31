@@ -1,0 +1,149 @@
+:root {
+  --unity-footer-height: 38px;
+  --canvas-width: 100vw;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  width: 100%;
+  height: 100%;
+  height: 100vh;
+  height: 100dvh;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+}
+
+body {
+  background: #231f20;
+  text-align: center;
+}
+
+#unity-container {
+  position: fixed;
+  inset: 0;
+  display: grid;
+  grid-template-rows: minmax(0, 1fr) var(--unity-footer-height);
+  width: 100%;
+  height: 100vh;
+  height: 100dvh;
+  overflow: hidden;
+}
+
+#unity-stage {
+  position: relative;
+  display: grid;
+  place-items: center;
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+}
+
+#unity-canvas {
+  display: block;
+  max-width: 100%;
+  max-height: 100%;
+  margin: 0;
+  background: {{{ BACKGROUND_COLOR }}};
+}
+
+#unity-loading-bar {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  display: none;
+  transform: translate(-50%, -50%);
+}
+
+#unity-logo {
+  width: 154px;
+  height: 130px;
+  background: url("unity-logo-{{{ SPLASH_SCREEN_STYLE.toLowerCase() }}}.png") no-repeat center;
+}
+
+#unity-progress-bar-empty {
+  width: 141px;
+  height: 18px;
+  margin-top: 10px;
+  margin-left: 6.5px;
+  background: url("progress-bar-empty-{{{ SPLASH_SCREEN_STYLE.toLowerCase() }}}.png") no-repeat center;
+}
+
+#unity-progress-bar-full {
+  width: 0%;
+  height: 18px;
+  margin-top: 10px;
+  background: url("progress-bar-full-{{{ SPLASH_SCREEN_STYLE.toLowerCase() }}}.png") no-repeat center;
+}
+
+#unity-warning {
+  position: absolute;
+  top: 5%;
+  left: 50%;
+  display: none;
+  transform: translateX(-50%);
+  background: white;
+  padding: 10px;
+  z-index: 1;
+}
+
+#unity-footer {
+  display: flex;
+  align-items: center;
+  justify-self: center;
+  width: min(var(--canvas-width), 100vw);
+  height: var(--unity-footer-height);
+  overflow: hidden;
+  text-align: left;
+}
+
+#unity-logo-title-footer {
+  flex: 0 0 102px;
+  width: 102px;
+  height: 38px;
+  background: url("unity-logo-title-footer.png") no-repeat center;
+}
+
+#unity-build-title {
+  margin-left: auto;
+  margin-right: 10px;
+  overflow: hidden;
+  color: #fff;
+  font-family: Arial, sans-serif;
+  font-size: 18px;
+  line-height: 38px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+#unity-fullscreen-button {
+  flex: 0 0 38px;
+  width: 38px;
+  height: 38px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: url("fullscreen-button.png") no-repeat center;
+  cursor: pointer;
+}
+
+#diagnostics-icon {
+  flex: 0 0 32px;
+  width: 32px;
+  height: 32px;
+  cursor: pointer;
+}
+
+#unity-canvas:fullscreen,
+#unity-canvas:-webkit-full-screen {
+  max-width: 100vw;
+  max-height: 100vh;
+  max-height: 100dvh;
+  margin: auto;
+}

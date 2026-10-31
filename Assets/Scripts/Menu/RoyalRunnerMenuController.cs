@@ -10,6 +10,15 @@ using UnityEngine.UI;
 /// </summary>
 public sealed class RoyalRunnerMenuController : MonoBehaviour
 {
+    private sealed class GridFlowHighlight
+    {
+        public RectTransform rect;
+        public Image image;
+        public bool vertical;
+        public float phase;
+        public float segmentLength;
+    }
+
     [Header("Scene transition")]
     [SerializeField] private string gameplaySceneName = "IndianMarketPreview";
     [SerializeField, Min(0.1f)] private float fadeDuration = 0.38f;
@@ -44,6 +53,8 @@ public sealed class RoyalRunnerMenuController : MonoBehaviour
     private Vector2[] decorationBasePositions;
     private Vector3[] decorationBaseRotations;
     private Vector3[] rotatingBaseRotations;
+    private readonly System.Collections.Generic.List<GridFlowHighlight> gridFlowHighlights =
+        new System.Collections.Generic.List<GridFlowHighlight>();
 
     private bool introComplete;
     private bool transitionStarted;
@@ -112,6 +123,7 @@ public sealed class RoyalRunnerMenuController : MonoBehaviour
 
     private IEnumerator Start()
     {
+        CreateGridFlowHighlights();
         yield return Reveal(backgroundGroup, null, Vector2.zero, Vector2.zero, Vector3.one, Vector3.one, 0.16f);
 
         if (characterVisual != null)
@@ -170,6 +182,83 @@ public sealed class RoyalRunnerMenuController : MonoBehaviour
         AnimateCharacterAndLogo(time);
         AnimateDecorations(time);
         AnimateButton(time);
+        AnimateGridFlowHighlights();
+    }
+
+    private void CreateGridFlowHighlights()
+    {
+        gridFlowHighlights.Clear();
+        if (gridImage == null)
+            return;
+
+        RectTransform gridRect = gridImage.rectTransform;
+        const int verticalLineCount = 30;
+        const int horizontalLineCount = 17;
+        const float sourceGridHeight = 540f;
+        const float sourceCellSize = 32f;
+        const float firstHorizontalLine = 27f;
+
+        for (int i = 1; i < verticalLineCount; i++)
+        {
+            float x = i / (float)verticalLineCount;
+            AddGridFlowHighlight(gridRect, new Vector2(x, 0.5f), true, x, 132f);
+        }
+
+        for (int i = 0; i < horizontalLineCount; i++)
+        {
+            float sourceY = firstHorizontalLine + i * sourceCellSize;
+            float y = 1f - sourceY / sourceGridHeight;
+            AddGridFlowHighlight(gridRect, new Vector2(0.5f, y), false, 0.5f + i / (float)horizontalLineCount, 190f);
+        }
+    }
+
+    private void AddGridFlowHighlight(Transform parent, Vector2 anchor, bool vertical, float phase, float segmentLength)
+    {
+        var go = new GameObject("Grid Line Flow", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image));
+        go.transform.SetParent(parent, false);
+
+        var rect = go.GetComponent<RectTransform>();
+        rect.anchorMin = rect.anchorMax = anchor;
+        rect.sizeDelta = vertical ? new Vector2(3f, segmentLength) : new Vector2(segmentLength, 3f);
+
+        var image = go.GetComponent<Image>();
+        image.color = new Color32(205, 143, 255, 0);
+        image.raycastTarget = false;
+        gridFlowHighlights.Add(new GridFlowHighlight
+        {
+            rect = rect,
+            image = image,
+            vertical = vertical,
+            phase = phase,
+            segmentLength = segmentLength
+        });
+    }
+
+    private void AnimateGridFlowHighlights()
+    {
+        if (gridImage == null)
+            return;
+
+        const float sweepDuration = 12f;
+        Rect gridBounds = gridImage.rectTransform.rect;
+        float time = Time.unscaledTime / sweepDuration;
+
+        for (int i = 0; i < gridFlowHighlights.Count; i++)
+        {
+            GridFlowHighlight item = gridFlowHighlights[i];
+            if (item.rect == null || item.image == null)
+                continue;
+
+            float progress = Mathf.Repeat(time + item.phase, 1f);
+            float axisLength = item.vertical ? gridBounds.height : gridBounds.width;
+            float position = Mathf.Lerp(-axisLength * 0.5f + item.segmentLength * 0.5f,
+                axisLength * 0.5f - item.segmentLength * 0.5f, progress);
+            item.rect.anchoredPosition = item.vertical ? new Vector2(0f, position) : new Vector2(position, 0f);
+
+            Color color = item.image.color;
+            color.a = Mathf.Lerp(0.05f, 0.46f, Mathf.Sin(progress * Mathf.PI));
+            item.image.color = color;
+        }
     }
 
     private void CacheIdlePositions()

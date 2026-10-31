@@ -5619,6 +5619,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   animator: {fileID: 1387190394}
   onHitnewChunkSpeed: -2
+  onHitAudio: {fileID: 8300000, guid: 2434947e6b174fd44b4df1a91af63ce5, type: 3}
 --- !u!136 &476853486
 CapsuleCollider:
   m_ObjectHideFlags: 0

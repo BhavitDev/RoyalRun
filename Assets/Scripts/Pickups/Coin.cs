@@ -8,10 +8,25 @@ public class Coin : PickupManagerScript
 
     private void Start()
     {
-        scoreManager = FindFirstObjectByType<ScoreManagerScript>();
+        CacheScoreManager();
     }
+
+    private void OnEnable() => CacheScoreManager();
+
+    private void CacheScoreManager()
+    {
+        if (scoreManager == null)
+            scoreManager = FindFirstObjectByType<ScoreManagerScript>();
+    }
+
     protected override void OnPickup()
     {
+        CacheScoreManager();
+        if (scoreManager == null)
+        {
+            Debug.LogWarning("Coin pickup ignored because this scene has no active ScoreManagerScript.", this);
+            return;
+        }
         scoreManager.manageScore(scoreByApple);
     }
 }

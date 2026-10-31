@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <title>Unity Web Player | {{{ PRODUCT_NAME }}}</title>
+    <link rel="shortcut icon" href="TemplateData/favicon.ico">
+    <link rel="stylesheet" href="TemplateData/style.css">
+#if SHOW_DIAGNOSTICS
+    <link rel="stylesheet" href="<<<TemplateData/diagnostics.css>>>">
+    <script src="<<<TemplateData/diagnostics.js>>>"></script>
+#endif
+  </head>
+  <body>
+    <div id="unity-container">
+      <main id="unity-stage">
+        <canvas id="unity-canvas" width={{{ WIDTH }}} height={{{ HEIGHT }}} tabindex="-1"></canvas>
+        <div id="unity-loading-bar" aria-live="polite">
+          <div id="unity-logo"></div>
+          <div id="unity-progress-bar-empty">
+            <div id="unity-progress-bar-full"></div>
+          </div>
+        </div>
+        <div id="unity-warning"></div>
+      </main>
+      <footer id="unity-footer">
+        <div id="unity-logo-title-footer"></div>
+        <div id="unity-build-title">{{{ PRODUCT_NAME }}}</div>
+        <button id="unity-fullscreen-button" type="button" aria-label="Enter fullscreen"></button>
+#if SHOW_DIAGNOSTICS
+        <img id="diagnostics-icon" src="TemplateData/webmemd-icon.png" alt="Open diagnostics">
+#endif
+      </footer>
+    </div>
+
+    <script>
+      const canvas = document.querySelector("#unity-canvas");
+      const stage = document.querySelector("#unity-stage");
+      const loadingBar = document.querySelector("#unity-loading-bar");
+      const progressBar = document.querySelector("#unity-progress-bar-full");
+      const fullscreenButton = document.querySelector("#unity-fullscreen-button");
+      const buildWidth = {{{ WIDTH }}};
+      const buildHeight = {{{ HEIGHT }}};
+
+      let resizePending = false;
+      function fitCanvas() {
+        const availableWidth = document.fullscreenElement === canvas ? window.innerWidth : stage.clientWidth;
+        const availableHeight = document.fullscreenElement === canvas ? window.innerHeight : stage.clientHeight;
+        if (availableWidth <= 0 || availableHeight <= 0 || buildWidth <= 0 || buildHeight <= 0) return;
+
+        const scale = Math.min(availableWidth / buildWidth, availableHeight / buildHeight);
+        const width = buildWidth * scale;
+        const height = buildHeight * scale;
+        canvas.style.width = width + "px";
+        canvas.style.height = height + "px";
+        document.documentElement.style.setProperty("--canvas-width", width + "px");
+      }
+
+      function scheduleCanvasFit() {
+        if (resizePending) return;
+        resizePending = true;
+        requestAnimationFrame(() => {
+          resizePending = false;
+          fitCanvas();
+        });
+      }
+
+      fitCanvas();
+      if ("ResizeObserver" in window) {
+        new ResizeObserver(scheduleCanvasFit).observe(stage);
+      }
+      window.addEventListener("resize", scheduleCanvasFit, { passive: true });
+      if (window.visualViewport) {
+        window.visualViewport.addEventListener("resize", scheduleCanvasFit, { passive: true });
+      }
+      document.addEventListener("fullscreenchange", scheduleCanvasFit);
+
+      function unityShowBanner(message, type) {
+        const warningBanner = document.querySelector("#unity-warning");
+        const banner = document.createElement("div");
+        banner.textContent = message;
+        if (type === "error") {
+          banner.style.cssText = "background: red; padding: 10px;";
+        } else if (type === "warning") {
+          banner.style.cssText = "background: yellow; padding: 10px;";
+          window.setTimeout(() => {
+            warningBanner.removeChild(banner);
+            warningBanner.style.display = warningBanner.children.length ? "block" : "none";
+          }, 5000);
+        }
+        warningBanner.appendChild(banner);
+        warningBanner.style.display = "block";
+      }
+
+      const buildUrl = "Build";
+      const loaderUrl = buildUrl + "/{{{ LOADER_FILENAME }}}";
+      const config = {
+        arguments: [],
+        dataUrl: buildUrl + "/{{{ DATA_FILENAME }}}",
+        frameworkUrl: buildUrl + "/{{{ FRAMEWORK_FILENAME }}}",
+#if USE_THREADS
+        workerUrl: buildUrl + "/{{{ WORKER_FILENAME }}}",
+#endif
+#if USE_WASM
+        codeUrl: buildUrl + "/{{{ CODE_FILENAME }}}",
+#endif
+#if SYMBOLS_FILENAME
+        symbolsUrl: buildUrl + "/{{{ SYMBOLS_FILENAME }}}",
+#endif
+        streamingAssetsUrl: "StreamingAssets",
+        companyName: {{{ JSON.stringify(COMPANY_NAME) }}},
+        productName: {{{ JSON.stringify(PRODUCT_NAME) }}},
+        productVersion: {{{ JSON.stringify(PRODUCT_VERSION) }}},
+        showBanner: unityShowBanner
+        // Unity keeps the WebGL render target synchronized with the canvas's CSS size by default.
+        // Leave matchWebGLToCanvasSize enabled so viewport resizes update rendering as well as display size.
+      };
+
+#if BACKGROUND_FILENAME
+      canvas.style.background = "url('" + buildUrl + "/{{{ BACKGROUND_FILENAME.replace(/'/g, '%27') }}}') center / cover";
+#endif
+
+      loadingBar.style.display = "block";
+      const script = document.createElement("script");
+      script.src = loaderUrl;
+      script.onload = () => {
+        createUnityInstance(canvas, config, (progress) => {
+          progressBar.style.width = (100 * progress) + "%";
+        }).then((unityInstance) => {
+          loadingBar.style.display = "none";
+          fullscreenButton.addEventListener("click", () => unityInstance.SetFullscreen(1));
+#if SHOW_DIAGNOSTICS
+          document.querySelector("#diagnostics-icon").addEventListener("click", () => {
+            unityDiagnostics.openDiagnosticsDiv(unityInstance.GetMetricsInfo);
+          });
+#endif
+        }).catch((message) => {
+          alert(message);
+        });
+      };
+      document.body.appendChild(script);
+    </script>
+  </body>
+</html>

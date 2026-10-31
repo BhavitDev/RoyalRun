@@ -5,8 +5,10 @@ public class PlayerCollisionHandler : MonoBehaviour
 {
     [SerializeField] Animator animator;
     [SerializeField] float onHitnewChunkSpeed = -2f;
+    [SerializeField] private AudioClip onHitAudio;
 
     PlatformChunkLoader platformChunkLoader;
+    private AudioSource onHitAudioSource;
 
 
     private void Start()
@@ -29,6 +31,24 @@ public class PlayerCollisionHandler : MonoBehaviour
             platformChunkLoader.ChangeChunkMoveSpeed(onHitnewChunkSpeed);
             cooldownTime = 0f;
             animator.SetTrigger(hitTrigger);
+            PlayOnHitAudio();
         }
+    }
+
+    private void PlayOnHitAudio()
+    {
+        if (onHitAudio == null)
+            return;
+
+        if (onHitAudioSource == null)
+        {
+            onHitAudioSource = gameObject.AddComponent<AudioSource>();
+            onHitAudioSource.playOnAwake = false;
+            onHitAudioSource.loop = false;
+            onHitAudioSource.spatialBlend = 0f;
+        }
+
+        if (!onHitAudioSource.isPlaying)
+            onHitAudioSource.PlayOneShot(onHitAudio);
     }
 }
